@@ -1,0 +1,15 @@
+{
+  "name": "log4node",
+  "version": "0.1.0",
+  "description": "Log on FED through node",
+  "main": "index.js",
+  "author": {
+    "name": "Zack Lin",
+    "email": "linzegia@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/linzegia/log4node.git"
+  },
+  "license": "MIT"
+}
