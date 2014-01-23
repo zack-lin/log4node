@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/linzegia/log4node.git"
+    "url": "git://github.com/zack-lin/log4node.git"
   },
   "license": "MIT"
 }
