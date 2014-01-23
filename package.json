@@ -11,5 +11,9 @@
     "type": "git",
     "url": "git://github.com/zack-lin/log4node.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "socket.io": "~0.9.16",
+    "colors": "~0.6.2"
+  }
 }
