@@ -1,8 +1,6 @@
 var http = require('http'),
     fs = require('fs'),
     sio = require('socket.io'),
-    logger = new require('./lib/logger_server')
-
     log = {},
     colorTheme = ['grey', 'green', 'yellow', 'red', 'blue', 'rainbow', 'cyan'];
 
