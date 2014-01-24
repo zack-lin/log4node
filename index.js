@@ -1,6 +1,7 @@
 var http = require('http'),
     fs = require('fs'),
     sio = require('socket.io'),
+    logger = new require('./lib/logger_server')
 
     log = {},
     colorTheme = ['grey', 'green', 'yellow', 'red', 'blue', 'rainbow', 'cyan'];
@@ -8,11 +9,11 @@ var http = require('http'),
 require('colors');
 
 log.init = function (app) {
-	if(app.get('env').toUpperCase()==='DEVELOPMENT') {
+	if(process.env.NODE_ENV==='DEVELOPMENT') {
 
-		app.get('/log/logger.js', function (req, res) {
+		app.get('/log4node/log.js', function (req, res) {
 	        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-	        fs.readFile('./lib/logger.js', function (err, data) {
+	        fs.readFile('./lib/logger_client.js', function (err, data) {
 	            if (err) throw err;
 	            res.end(data);
 	        });
@@ -27,8 +28,9 @@ log.init = function (app) {
 	    //监听来自客户端的 console 消息
 	    io.sockets.on('connection', function (socket) {
 	        socket.on('Log msg', function (data) {
-	            console.log('From client page says: '[colorTheme[JSON.parse(data)['level']]],
-	                JSON.stringify(JSON.parse(data)['args'])[colorTheme[JSON.parse(data)['level']]]);
+	        	data = JSON.parse(data);
+	            console.log('From client page says: '[colorTheme[data['level']]],
+	                JSON.stringify(data['args'])[colorTheme[data['level']]]);
 	        });
 	    });
 	}
