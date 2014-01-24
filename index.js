@@ -7,7 +7,7 @@ var http = require('http'),
 require('colors');
 
 log.init = function (app) {
-	if(process.env.NODE_ENV==='DEVELOPMENT') {
+	if(process.env.NODE_ENV==='DEVELOPMENT'||!process.env.NODE_ENV) {
 
 		app.get('/uc-logger/log.js', function (req, res) {
 	        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
