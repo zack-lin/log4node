@@ -1,37 +1,46 @@
 var http = require('http'),
     fs = require('fs'),
-    sio = require('socket.io'),
-    log = {},
-    colorTheme = ['grey', 'green', 'yellow', 'red', 'blue', 'rainbow', 'cyan'];
+    sio = require('socket.io');
+
+var colorTheme = ['grey', 'green', 'yellow', 'red', 'blue', 'rainbow', 'cyan'];
 
 require('colors');
 
-log.init = function (app) {
-	if(process.env.NODE_ENV==='DEVELOPMENT'||!process.env.NODE_ENV) {
+function Log(app, mode) {
+    this.app = app;
+    this.mode = (mode || 'DEVELOPMENT').toUpperCase();
+    this.env = (process.env.NODE_ENV || 'DEVELOPMENT').toUpperCase();
+}
 
-		app.get('/uc-logger/log.js', function (req, res) {
-	        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-	        fs.readFile(__dirname + '/lib/logger_client.js', function (err, data) {
-	            if (err) throw err;
-	            res.end(data);
-	        });
-	    });
-    
-	    var serv = http.createServer(app),
-	        io = sio.listen(serv);
-	    serv.listen(app.get('port'));
+Log.prototype.listen = function () {
+    var app = this.app;
+    if (this.env === this.mode) {
 
-	    io.set('log level', 1);
+        app.get('/uc-Logger/Log.js', function (req, res) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+            fs.readFile(__dirname + '/lib/Logger_client.js', function (err, data) {
+                if (err) throw err;
+                res.end(data);
+            });
+        });
 
-	    //监听来自客户端的 console 消息
-	    io.sockets.on('connection', function (socket) {
-	        socket.on('Log msg', function (data) {
-	        	data = JSON.parse(data);
-	            console.log('From client page says: '[colorTheme[data['level']]],
-	                JSON.stringify(data['args'])[colorTheme[data['level']]]);
-	        });
-	    });
-	}
+        var serv = http.createServer(app),
+            io = sio.listen(serv, {log: false});
+
+        serv.listen(app.get('port'));
+
+        io.sockets.on('connection', function (socket) {
+            socket.on('Log msg', function (data) {
+                data = JSON.parse(data);
+                var infos = data['args'];
+                infos.unshift('   Page info :: ');
+                for(var i = 0, len = infos.length; i<len;i++){
+                    infos[i] = infos[i][colorTheme[data['level']]];
+                }
+                console.log.apply(console, infos);
+            });
+        });
+    }
 };
 
-module.exports = log;
+module.exports = Log;
