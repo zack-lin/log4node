@@ -11,7 +11,7 @@ require('colors');
 log.init = function (app) {
 	if(process.env.NODE_ENV==='DEVELOPMENT') {
 
-		app.get('/log4node/log.js', function (req, res) {
+		app.get('/uc-logger/log.js', function (req, res) {
 	        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
 	        fs.readFile('./lib/logger_client.js', function (err, data) {
 	            if (err) throw err;

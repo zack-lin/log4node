@@ -1,5 +1,5 @@
 {
-  "name": "log4node",
+  "name": "uc-logger",
   "version": "0.1.0",
   "description": "Log on FED through node",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/zack-lin/log4node.git"
+    "url": "git://github.com/zack-lin/uc-logger.git"
   },
   "license": "MIT",
   "dependencies": {
