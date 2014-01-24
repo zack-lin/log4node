@@ -16,6 +16,11 @@ Client page or page what you want to listen add this code in head selector:
     <script src="socket.io/socket.io.js"></script>
     <script src="uc-logger/log.js"></script>
 
+Server page can use:
+
+    var UC_log = require('uc-logger'),
+        uc_log = new UC_log(require('express')(), 'development');
+
 You can use log.log/info/warn/error method. For example,
 
 	log.log('Hello world!');
