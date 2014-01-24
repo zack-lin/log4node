@@ -11,7 +11,7 @@ log.init = function (app) {
 
 		app.get('/uc-logger/log.js', function (req, res) {
 	        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-	        fs.readFile('./lib/logger_client.js', function (err, data) {
+	        fs.readFile(__dirname + '/lib/logger_client.js', function (err, data) {
 	            if (err) throw err;
 	            res.end(data);
 	        });
