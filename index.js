@@ -16,12 +16,40 @@ Log.prototype.listen = function () {
     var app = this.app;
     if (this.env === this.mode) {
 
-        app.get('/uc-Logger/Log.js', function (req, res) {
+        app.get('/uc-Logger/log.js', function (req, res) {
             res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-            fs.readFile(__dirname + '/lib/Logger_client.js', function (err, data) {
+            fs.readFile(__dirname + '/lib/log/logger.js', function (err, data) {
                 if (err) throw err;
                 res.end(data);
             });
+        });
+
+        app.get('/uc-Logger/jquery.min.js', function (req, res) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+            fs.readFile(__dirname + '/lib/cpu/js/jquery-lastest.min.js', function (err, data) {
+                if (err) throw err;
+                res.end(data);
+            });
+        });
+
+        app.get('/uc-Logger/canvasjs.min.js', function (req, res) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+            fs.readFile(__dirname + '/lib/cpu/js/canvasjs.min.js', function (err, data) {
+                if (err) throw err;
+                res.end(data);
+            });
+        });
+
+        app.get('/uc-Logger/cpu.js', function (req, res) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+            fs.readFile(__dirname + '/lib/cpu/js/cpu.js', function (err, data) {
+                if (err) throw err;
+                res.end(data);
+            });
+        });
+
+        app.get('/cpu', function(req, res){
+        	res.sendfile(__dirname + '/lib/cpu/index.html');
         });
 
         var serv = http.createServer(app),
@@ -40,6 +68,14 @@ Log.prototype.listen = function () {
                 console.log.apply(console, infos);
             });
         });
+
+        var monitor = io.of('/monitor').on('connection', function (socket) {
+    		socket.on('CPU monitor msg', function(data){
+            	viewer.emit('CPU mark msg', data);
+            });
+		});
+
+		var viewer = io.of('/cpu-viewer').on('connection', function (socket) {});
     }
 };
 

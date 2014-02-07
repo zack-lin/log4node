@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>CPU Monitor</title>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="uc-Logger/jquery.min.js"></script>
+    <script src="uc-Logger/canvasjs.min.js"></script>
+</head>
+<body>
+<div id="chartContainer" style="height: 300px; width:100%;">
+</div>
+<script>
+    var viewer = io.connect('http://'+ location.host +'/cpu-viewer'),
+        cache = {
+          data:[],
+          x: 0
+        };
+
+    var chart = new CanvasJS.Chart("chartContainer",{
+      title :{
+        text: "CPU Monitor Viewer"
+      }, 
+      axisX: {
+        tickLength: 0,
+        labelFontColor: 'white'
+      },
+      axisY: {
+        interlacedColor: "azure",
+        tickColor: "azure",
+        titleFontColor: "rgb(0,75,141)",
+        interval: 0.5,
+        maximum: 1,
+        minimum: -1
+      },     
+      data: [{
+        type: "line",
+        markerType: "none",
+        dataPoints: cache.data 
+      }]
+    });
+
+    for(var i=0; i<500;i++){
+      cache.data.push({
+        y: 0,
+        x: i
+      });
+    }
+
+    cache.x = i;
+    chart.render();
+
+
+    viewer.on('CPU mark msg', function (data) {
+        if(data){
+          cache.data.push({
+            y: data,
+            x: cache.x
+          });
+          
+          if(cache.data.length>500){
+            cache.data.shift();
+          }
+          
+          chart.render();  
+        }
+        cache.x++;
+    });
+    console.log(chart);
+</script>
+</body>
+</html>
