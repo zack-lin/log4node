@@ -3,70 +3,98 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>CPU Monitor</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 0;
+            padding 0;
+            font-family: "Hiragino Sans GB", "Microsoft YaHei", tahoma, arial, sans-serif normal;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            line-height: 64px;
+            margin: 0;
+            padding 0;
+        }
+
+        .switch-btn {
+            height: 44px;
+            display: inline-block;
+            padding: 0 14px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 18px;
+        }
+    </style>
     <script src="socket.io/socket.io.js"></script>
-    <script src="uc-Logger/jquery.min.js"></script>
-    <script src="uc-Logger/canvasjs.min.js"></script>
+    <script src="uc-logger/jquery.min.js"></script>
+    <script src="uc-logger/smoothie.min.js"></script>
 </head>
 <body>
-<div id="chartContainer" style="height: 300px; width:100%;">
+<h1 class="title">CPU Monitor Viewer</h1>
+<canvas id="chart" width="800px" height="500px"></canvas>
+</div>
+<div class="tools">
+    <button id="switchBtn" class="switch-btn" data-status="off">Turn On</button>
 </div>
 <script>
-    var viewer = io.connect('http://'+ location.host +'/cpu-viewer'),
-        cache = {
-          data:[],
-          x: 0
-        };
+    var viewer = io.connect('http://' + location.host + '/cpu-viewer');
+    viewer.emit('CPU Viewer Turn Off');
 
-    var chart = new CanvasJS.Chart("chartContainer",{
-      title :{
-        text: "CPU Monitor Viewer"
-      }, 
-      axisX: {
-        tickLength: 0,
-        labelFontColor: 'white'
-      },
-      axisY: {
-        interlacedColor: "azure",
-        tickColor: "azure",
-        titleFontColor: "rgb(0,75,141)",
-        interval: 0.5,
-        maximum: 1,
-        minimum: -1
-      },     
-      data: [{
-        type: "line",
-        markerType: "none",
-        dataPoints: cache.data 
-      }]
+    var smoothie = new SmoothieChart({
+        minValue: -1.0,
+        maxValue: 1.0,
+        millisPerPixel: 25,
+        grid: {
+            strokeStyle: 'transparent',
+            fillStyle: 'rgb(60, 0, 0)',
+            lineWidth: 1,
+            millisPerLine: 500
+        },
+        horizontalLines: [
+            {color: '#ffffff', lineWidth: 1, value: 0}
+        ],
+        labels: {
+            fillStyle: 'rgb(255, 255, 245)'
+        }
     });
+    smoothie.streamTo(document.getElementById("chart"));
 
-    for(var i=0; i<500;i++){
-      cache.data.push({
-        y: 0,
-        x: i
-      });
-    }
-
-    cache.x = i;
-    chart.render();
-
+    var line = new TimeSeries();
 
     viewer.on('CPU mark msg', function (data) {
-        if(data){
-          cache.data.push({
-            y: data,
-            x: cache.x
-          });
-          
-          if(cache.data.length>500){
-            cache.data.shift();
-          }
-          
-          chart.render();  
-        }
-        cache.x++;
+        line.append(new Date().getTime(), data);
     });
-    console.log(chart);
+
+    smoothie.addTimeSeries(line, {
+        strokeStyle: 'rgb(0, 255, 0)',
+        fillStyle: 'rgba(0, 255, 0, 0.4)',
+        lineWidth: 3
+    });
+    setTimeout(function () {
+        smoothie.stop();
+    }, 50);
+
+
+    $('#switchBtn').on('click', function () {
+        var status = $(this).data('status');
+        if (status === 'off') {
+            smoothie.start();
+            $(this).data('status', 'on').text('Turn Off');
+            viewer.emit('CPU Viewer Turn On');
+        } else {
+            smoothie.stop();
+            $(this).data('status', 'off').text('Turn On');
+            viewer.emit('CPU Viewer Turn Off');
+        }
+    });
+
+    viewer.on('CPU Viewer Switch Turn On', function (data) {
+        $('#switchBtn').data('status', 'on').text('Turn Off');
+    });
 </script>
 </body>
 </html>
