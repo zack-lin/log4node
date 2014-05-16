@@ -15,6 +15,7 @@ Client page or page what you want to listen add this code in head selector:
 
     <script src="socket.io/socket.io.js"></script>
     <script src="uc-logger/log.js"></script>
+    <script src="uc-logger/cpu.js"></script>
 
 Server page can use:
 
@@ -28,6 +29,8 @@ You can use log.log/info/warn/error method. For example,
 Then the server will receive and output:
 
  	Page info :: Hello world!
+
+When you add cpu.js file, you can visit x.x.x.x:port/cpu to the monitor viewer page.  	
 
 License
 =======

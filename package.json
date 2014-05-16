@@ -1,19 +1,19 @@
 {
-  "name": "uc-logger",
-  "version": "1.0.2",
-  "description": "Log on FED through node",
-  "main": "index.js",
-  "author": {
-    "name": "Zack Lin",
-    "email": "linzegia@gmail.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/zack-lin/uc-logger.git"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "socket.io": "~0.9.16",
-    "colors": "~0.6.2"
-  }
+    "name": "uc-logger",
+    "version": "2.0.2",
+    "description": "Log on FED through node",
+    "main": "index.js",
+    "author": {
+        "name": "Zack Lin",
+        "email": "linzegia@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/zack-lin/uc-logger.git"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "socket.io": "~0.9.16",
+        "colors": "~0.6.2"
+    }
 }

@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>CPU Monitor</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 0;
+            padding 0;
+            font-family: "Hiragino Sans GB", "Microsoft YaHei", tahoma, arial, sans-serif normal;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            line-height: 64px;
+            margin: 0;
+            padding 0;
+        }
+
+        .switch-btn {
+            height: 44px;
+            display: inline-block;
+            padding: 0 14px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 18px;
+        }
+    </style>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="uc-logger/jquery.min.js"></script>
+    <script src="uc-logger/smoothie.min.js"></script>
+</head>
+<body>
+<h1 class="title">CPU Monitor Viewer</h1>
+<canvas id="chart" width="800px" height="500px"></canvas>
+</div>
+<div class="tools">
+    <button id="switchBtn" class="switch-btn" data-status="off">Turn On</button>
+</div>
+<script>
+    var viewer = io.connect('http://' + location.host + '/cpu-viewer');
+    viewer.emit('CPU Viewer Turn Off');
+
+    var smoothie = new SmoothieChart({
+        minValue: -1.0,
+        maxValue: 1.0,
+        millisPerPixel: 25,
+        grid: {
+            strokeStyle: 'transparent',
+            fillStyle: 'rgb(60, 0, 0)',
+            lineWidth: 1,
+            millisPerLine: 500
+        },
+        horizontalLines: [
+            {color: '#ffffff', lineWidth: 1, value: 0}
+        ],
+        labels: {
+            fillStyle: 'rgb(255, 255, 245)'
+        }
+    });
+    smoothie.streamTo(document.getElementById("chart"));
+
+    var line = new TimeSeries();
+
+    viewer.on('CPU mark msg', function (data) {
+        line.append(new Date().getTime(), data);
+    });
+
+    smoothie.addTimeSeries(line, {
+        strokeStyle: 'rgb(0, 255, 0)',
+        fillStyle: 'rgba(0, 255, 0, 0.4)',
+        lineWidth: 3
+    });
+    setTimeout(function () {
+        smoothie.stop();
+    }, 50);
+
+
+    $('#switchBtn').on('click', function () {
+        var status = $(this).data('status');
+        if (status === 'off') {
+            smoothie.start();
+            $(this).data('status', 'on').text('Turn Off');
+            viewer.emit('CPU Viewer Turn On');
+        } else {
+            smoothie.stop();
+            $(this).data('status', 'off').text('Turn On');
+            viewer.emit('CPU Viewer Turn Off');
+        }
+    });
+
+    viewer.on('CPU Viewer Switch Turn On', function (data) {
+        $('#switchBtn').data('status', 'on').text('Turn Off');
+    });
+</script>
+</body>
+</html>
