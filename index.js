@@ -35,7 +35,7 @@ Log.prototype.listen = function () {
                 var infos = data['args'];
                 infos.unshift('   Page info :: ');
                 for(var i = 0, len = infos.length; i<len;i++){
-                    infos[i] = infos[i][colorTheme[data['level']]];
+                    infos[i] = JSON.stringify(infos[i])[colorTheme[data['level']]];
                 }
                 console.log.apply(console, infos);
             });
